@@ -21,6 +21,17 @@ namespace Duplicate_finder
         }
     }
 
+    class Output
+    {
+        public int dups;
+        public List<string> output;
+        public Output(int dups, List<string> output)
+        {
+            this.dups = dups;
+            this.output = output;
+        }
+    }
+
     class Program
     {
 
@@ -56,9 +67,10 @@ namespace Duplicate_finder
 
             }
 
-            int printIdentical (List<FileData> files)
+            Output printIdentical (List<FileData> files)
             {
                 int duplicates = 0;
+                List<string> res = new List<string>();
                 foreach(FileData i in files)
                 {
 
@@ -79,40 +91,50 @@ namespace Duplicate_finder
                     }
                     if (copies.Count != 0)
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("A file {0} has {1} duplicate(s):", i.name, copies.Count);
-                        Console.ForegroundColor = ConsoleColor.White;
+                        res.Add("A file " + i.name + " has " + copies.Count + " duplicates:");
                         duplicates++;
                         foreach (FileData item in copies)
                         {
                             duplicates++;
-                            Console.WriteLine("-------" + item.name);
+                            res.Add("------->" + item.name);
                         }
                     }
                 }
-                return duplicates;
+                return new Output(duplicates, res);
             }
 
             //"C:\\Program Files\\nodejs"
             Console.WriteLine("Enter path to directory:");
             string dir = Console.ReadLine();
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            Stopwatch f = new Stopwatch();
+            f.Start();
 
             List<FileData> paths = getFileList(dir);
 
+            f.Stop();
+            Stopwatch c = new Stopwatch();
+
             Console.WriteLine("================RESULT=============");
 
-            int identical = printIdentical(paths);
-            sw.Stop();
+            c.Start();
+
+            Output identical = printIdentical(paths);
+            c.Stop();
+
+            foreach (string i in identical.output)
+            {
+                Console.WriteLine(i);
+            }
 
             Console.WriteLine("====================================");
             Console.WriteLine(paths.Count + " files checked");
             Console.WriteLine("====================================");
-            Console.WriteLine(identical + " duplicates found");
+            Console.WriteLine(identical.dups + " duplicates found");
             Console.WriteLine("====================================");
-            Console.WriteLine(sw.Elapsed + " elapsed");
+            Console.WriteLine(f.Elapsed + " took for getting file list");
+            Console.WriteLine(c.Elapsed + " took for comparation");
+
             System.GC.Collect();
             Console.ReadKey();
         }
