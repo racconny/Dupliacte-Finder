@@ -10,15 +10,13 @@ namespace Duplicate_finder
 {
     class FileData
     {
-        public byte[] bytes;
         public string name;
-        public int bytesize;
+        public long size;
         public bool check;
-        public FileData(byte[] bytes, string name)
+        public FileData(string name)
         {
-            this.bytes = bytes;
             this.name = name;
-            this.bytesize = bytes.Length;
+            this.size = new FileInfo(name).Length;
             this.check = false;
         }
     }
@@ -39,7 +37,7 @@ namespace Duplicate_finder
                     for (int i = 0; i < files.Length; i++)
                     {
                         byte[] tmp = File.ReadAllBytes(files[i]);
-                        FileData t = new FileData(tmp, files[i]);
+                        FileData t = new FileData(files[i]);
 
                         filedata.Add(t);
                     }
@@ -69,9 +67,9 @@ namespace Duplicate_finder
                     foreach (FileData j in files)
                     {
 
-                        if (i != j && !i.check && !j.check)
+                        if (i != j && !i.check && !j.check && i.size == j.size)
                         {
-                            if (i.bytes.SequenceEqual(j.bytes))
+                            if (File.ReadAllBytes(i.name).SequenceEqual(File.ReadAllBytes(j.name)))
                             {
                                 j.check = true;
                                 copies.Add(j);
@@ -96,13 +94,13 @@ namespace Duplicate_finder
             }
 
             //"C:\\Program Files\\nodejs"
-            Console.WriteLine("Enter path to directory (use double slash):");
+            Console.WriteLine("Enter path to directory:");
             string dir = Console.ReadLine();
-
-            List<FileData> paths = getFileList(dir);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
+
+            List<FileData> paths = getFileList(dir);
 
             Console.WriteLine("================RESULT=============");
 
@@ -115,7 +113,7 @@ namespace Duplicate_finder
             Console.WriteLine(identical + " duplicates found");
             Console.WriteLine("====================================");
             Console.WriteLine(sw.Elapsed + " elapsed");
-
+            System.GC.Collect();
             Console.ReadKey();
         }
     }
