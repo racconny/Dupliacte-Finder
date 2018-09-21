@@ -30,7 +30,7 @@ namespace Duplicate_finder
             this.dups = dups;
             this.output = output;
         }
-    }
+    } 
 
     class Program
     {
@@ -122,10 +122,15 @@ namespace Duplicate_finder
             Output identical = printIdentical(paths);
             c.Stop();
 
+            Stopwatch ot = new Stopwatch();
+            ot.Start();
+
             foreach (string i in identical.output)
             {
                 Console.WriteLine(i);
             }
+
+            ot.Stop();
 
             Console.WriteLine("====================================");
             Console.WriteLine(paths.Count + " files checked");
@@ -134,6 +139,9 @@ namespace Duplicate_finder
             Console.WriteLine("====================================");
             Console.WriteLine(f.Elapsed + " took for getting file list");
             Console.WriteLine(c.Elapsed + " took for comparation");
+            Console.WriteLine(ot.Elapsed + " took for output");
+            Console.WriteLine("====================================");
+            Console.WriteLine(f.Elapsed + c.Elapsed + ot.Elapsed + " summary");
 
             System.GC.Collect();
             Console.ReadKey();
